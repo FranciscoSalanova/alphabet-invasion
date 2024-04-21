@@ -14,6 +14,7 @@ const speedAdjust = 50
 
 const intervalSubject = new BehaviorSubject(600)
 
+/** Observable que permite la generación aleatoria de letras. */
 const letters$ = intervalSubject.pipe(
   switchMap((i) =>
     interval(i).pipe(
@@ -34,11 +35,13 @@ const letters$ = intervalSubject.pipe(
   )
 )
 
+/** Observable que captura las teclas presionadas. */
 const keys$ = fromEvent<KeyboardEvent>(document, 'keydown').pipe(
   startWith({ key: '' }),
   map((e: KeyboardEvent) => e.key)
 )
 
+/** Permite renderizar el juego a partir de su estado actual. */
 const renderGame = (state: State) => (
   (document.body.innerHTML = `Score: ${state.score}, Level: ${state.level} <br />`),
   state.letters.forEach(
@@ -49,9 +52,10 @@ const renderGame = (state: State) => (
     '<br />'.repeat(endThreshold - state.letters.length - 1) +
     '-'.repeat(gameWidth))
 )
-const renderGameOver = () => (document.body.innerHTML += '<br />GAME OVER!')
 const noop = () => {}
+const renderGameOver = () => (document.body.innerHTML += '<br />GAME OVER!')
 
+/** Observable que encapsula la lógica del juego combinando lo producido por los observables keys$ y letters$. */
 const game$ = combineLatest(keys$, letters$).pipe(
   scan<[string, Letters], State>(
     (state, [key, letters]) => (
@@ -69,7 +73,7 @@ const game$ = combineLatest(keys$, letters$).pipe(
     ),
     { score: 0, letters: [], level: 1 }
   ),
-  takeWhile((state: State) => state.letters.length < endThreshold)
+  takeWhile((state: State) => state.letters.length < endThreshold) // esta es la marca del final del juego
 )
 
 game$.subscribe(renderGame, noop, renderGameOver)
