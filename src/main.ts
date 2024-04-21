@@ -1,6 +1,6 @@
 import { BehaviorSubject, fromEvent, interval, combineLatest } from 'rxjs'
 import { scan, startWith, switchMap, map, takeWhile } from 'rxjs/operators'
-import { Letter, Letters, State } from './types'
+import { Letters, State } from './types'
 
 const randomLetter = () => {
   return String.fromCharCode(
